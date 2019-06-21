@@ -13,6 +13,7 @@ This workflow requires genotype files in GDS format (\*.gds) and a reference var
 An M x N diagonal matrix of pairwise LD values where N = number of variants within the genomic region. M = 1 if a reference variant is provided. M = N otherwise.
 
 ## Workflow Inputs
+**Bold** inputs are required. *Italic* inputs are optional. **NOTE**: one of [reference variant, interval] is required. Both may be provided resulting in LD values for the reference variant within the interval.
 
 - **this_gds_file**: [file, \*.gds] GDS file of genotypes per sample.
 - *this_sample_ids_file*: [file, default = all samples] File of sample IDs desired for LD calculation. This file should contain one sample ID per line with no header.
