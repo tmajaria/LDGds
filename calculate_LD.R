@@ -30,6 +30,7 @@ min.maf <- as.numeric(input_args[8])
 max.maf <- as.numeric(input_args[9])
 ld.method <- tolower(input_args[10])
 out.pref <- input_args[11]
+visual.bool <- ifelse(startsWith(tolower(input_args[12]), "t"), TRUE, FALSE)
 
 
 ## # these are from the DCC pipeline, credit -> S. Gogarten https://github.com/UW-GAC/analysis_pipeline/blob/master/TopmedPipeline/R/filterVariants.R
@@ -87,6 +88,38 @@ out.pref <- input_args[11]
   seqClose(gds.data)
   write.csv(.errorDict[[why]], file = out.file, row.names = T, col.names = NA, sep = ",", quote = F) 
   stop(.errorDict[[why]])
+}
+
+.ldMethodName <- function(ld.method){
+  n <- list(
+    'r' = expression(R^2),
+    'composite' = "Composite",
+    'corr' = "Correlation",
+    'dprime' = "D\'",
+    'cov' = "Cov"
+    )
+  n[[ld.method]]
+}
+
+plotLD <- function(ld, ld.method, out.file){
+  library(ggplot2)
+  library(reshape2)
+  ld.melt <- melt(as.matrix(ld))
+  ld.melt$Var1 <- factor(ld.melt$Var1, levels = rev(row.names(ld)))
+  # names(ld.melt)[3] <- 
+  plot <- ggplot() +
+    geom_raster(data = ld.melt, aes(x=Var2, y=Var1, fill=value)) +
+    scale_fill_gradient2(low = 'white', high = 'red') +
+    scale_x_discrete(position = "top") +
+    theme(axis.title.x = element_blank()) +
+    theme(axis.title.y = element_blank()) +
+    theme(axis.text.x = element_text(angle = 90)) +
+    labs(fill = .ldMethodName(ld.method)) #+
+    # theme(legend.position = "none")
+
+  png(filename = out.file, width = 6, height = 5, units = "in", res=400, type = "cairo")
+  print(plot)
+  dev.off()
 }
 
 ##
@@ -231,6 +264,14 @@ if (is.null(ref.var)){
   ld.df <- t(data.frame(ld.list[order(names(ld.list))]))
   row.names(ld.df) <- markers[ref.id,]$MarkerName
   colnames(ld.df) <- markers[colnames(ld.df),]$MarkerName
+}
+
+# make visulaization
+viz.file <- sub(".csv$", ".png", out.file)
+if (visual.bool) {
+  plotLD(ld.df, ld.method, viz.file)
+} else {
+  file.create(viz.file)
 }
 
 # write only vector of LD values if given reference variant
