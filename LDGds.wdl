@@ -3,6 +3,7 @@ task calculate_LD {
 	File gds_file
 	File? sample_ids_file
 	String? ref_var
+	File? rsid_file
 	String? interval
 	Int? half_interval
 	Int? min_mac
@@ -18,7 +19,7 @@ task calculate_LD {
 	Int default_disk = ceil(size(gds_file, "GB")) + 20
 
 	command {
-		R --vanilla --args ${gds_file} ${default="NA" sample_ids_file} ${default="NA" ref_var} ${default="NA" interval} ${default="25000" half_interval} ${default="0" min_mac} ${default="10000000" max_mac} ${default="0.05" min_maf} ${default="1" max_maf} ${default="r" ld_method} ${out_pref} ${default="F" visualization} < ${script}
+		R --vanilla --args ${gds_file} ${default="NA" sample_ids_file} ${default="NA" ref_var} ${default="NA" rsid_file} ${default="NA" interval} ${default="25000" half_interval} ${default="0" min_mac} ${default="10000000" max_mac} ${default="0.05" min_maf} ${default="1" max_maf} ${default="r" ld_method} ${out_pref} ${default="F" visualization} < ${script}
 	}
 
 	runtime {
@@ -37,6 +38,7 @@ workflow LD_wf {
 	File this_gds_file
 	File? this_sample_ids_file
 	String? this_ref_var
+	File? this_rsid_file
 	String? this_interval
 	Int? this_half_interval
 	Int? this_min_mac
@@ -56,6 +58,7 @@ workflow LD_wf {
 				gds_file = this_gds_file,
 				sample_ids_file = this_sample_ids_file,
 				ref_var = this_ref_var,
+				rsid_file = this_rsid_file,
 				interval = this_interval,
 				half_interval = this_half_interval,
 				min_mac = this_min_mac,
