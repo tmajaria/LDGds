@@ -22,7 +22,7 @@ task calculate_LD {
 	}
 
 	runtime {
-		docker: "analysiscommon/genesis_wdl:v0.1"
+		docker: "tmajarian/ldgds:v0.1"
 		disks: "local-disk " + select_first([disk,default_disk]) + " HDD"
 		memory: select_first([memory,"5"]) + " GB"
 	}
