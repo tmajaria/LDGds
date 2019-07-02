@@ -347,7 +347,11 @@ if (in.flags[[3]]){
 
 # get all variants ids in common between three lists of variants
 all.markers <- do.call(rbind,all.markers[unlist(in.flags)])
-unique.markers <- all.markers$variant.id[duplicated(all.markers$variant.id)]
+if (sum(unlist(in.flags)) > 1){
+  unique.markers <- all.markers$variant.id[duplicated(all.markers$variant.id)]  
+} else {
+  unique.markers <- unique(all.markers$variant.id)
+}
 
 # set filter to this list
 seqResetFilter(gds.data)
