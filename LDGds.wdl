@@ -50,7 +50,7 @@ workflow LD_wf {
 	Int? this_memory
 	Int? this_disk
 
-	if (defined(this_ref_var) || defined(this_ref_var)) {
+	if (defined(this_ref_var) || defined(this_interval)) {
 		call calculate_LD {
 			input: 
 				gds_file = this_gds_file,
@@ -71,7 +71,7 @@ workflow LD_wf {
 		String? pass_message = "Workflow completed"
 	}
 
-	if (!defined(this_ref_var) && !defined(this_ref_var)) {
+	if (!defined(this_ref_var) && !defined(this_interval)) {
 		String? fail_message = "Neither reference variant nor interval were specified, no computation was initiated."
 	}
 

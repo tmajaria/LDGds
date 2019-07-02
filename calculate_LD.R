@@ -4,7 +4,7 @@
 # sample.ids.file <- NULL
 # ref.var <- "1:96922279"
 # interval <- NULL
-# half.interval <- 500000
+# half.interval <- 1000000
 # min.mac <- 5
 # max.mac <- 1000
 # min.maf <- 0.00001
@@ -101,23 +101,45 @@ visual.bool <- ifelse(startsWith(tolower(input_args[12]), "t"), TRUE, FALSE)
   n[[ld.method]]
 }
 
-plotLD <- function(ld, ld.method, out.file){
+plotLD <- function(ld, ld.method, single.var, out.file){
   library(ggplot2)
   library(reshape2)
   ld.melt <- melt(as.matrix(ld))
   ld.melt$Var1 <- factor(ld.melt$Var1, levels = rev(row.names(ld)))
-  # names(ld.melt)[3] <- 
-  plot <- ggplot() +
-    geom_raster(data = ld.melt, aes(x=Var2, y=Var1, fill=value)) +
-    scale_fill_gradient2(low = 'white', high = 'red') +
-    scale_x_discrete(position = "top") +
-    theme(axis.title.x = element_blank()) +
-    theme(axis.title.y = element_blank()) +
-    theme(axis.text.x = element_text(angle = 90)) +
-    labs(fill = .ldMethodName(ld.method)) #+
-    # theme(legend.position = "none")
+  png.dims <- c(max(2, 0.1*ncol(ld)), max(2, 0.1*nrow(ld)))
+  if (single.var){
+    plot <- ggplot() +
+      geom_raster(data = ld.melt, aes(x=Var2, y=Var1, fill=value)) +
+      scale_fill_gradient2(low = 'white', high = 'red') +
+      scale_x_discrete(position = "top") +
+      theme(axis.title.x = element_blank()) +
+      theme(axis.title.y = element_blank()) +
+      theme(axis.text.x = element_text(angle = 90, size = 6)) +
+      theme(axis.text.y = element_text(size = 6)) +
+      # theme(legend.position = "right") +
+      labs(fill = .ldMethodName(ld.method)) +
+      guides(fill = guide_colourbar(barwidth = 0.5, barheight = 3)) + 
+      coord_fixed()
+      # theme(legend.position = "none")
 
-  png(filename = out.file, width = 6, height = 5, units = "in", res=400, type = "cairo")
+  
+    png(filename = out.file, width = png.dims[1], height = 2.5, units = "in", res=400, type = "cairo")
+  } else {
+    plot <- ggplot() +
+      geom_raster(data = ld.melt, aes(x=Var2, y=Var1, fill=value)) +
+      scale_fill_gradient2(low = 'white', high = 'red') +
+      scale_x_discrete(position = "top") +
+      theme(axis.title.x = element_blank()) +
+      theme(axis.title.y = element_blank()) +
+      theme(axis.text.x = element_text(angle = 90, size = 6)) +
+      theme(axis.text.y = element_text(size = 6)) +
+      labs(fill = .ldMethodName(ld.method)) +
+      guides(fill = guide_colourbar(barwidth = 0.5, barheight = 3)) +
+      coord_fixed()
+      # theme(legend.position = "none")
+    png(filename = out.file, width = png.dims[1], height = png.dims[2]+2, units = "in", res=400, type = "cairo")
+  }
+  
   print(plot)
   dev.off()
 }
@@ -150,7 +172,7 @@ gds.samples <- seqGetData(gds.data, "sample.id")
 
 # Load sample ids
 if (!is.null(sample.ids.file)){
-  sample.ids <- read.table(sample.ids.file, stringsAsFactors = F, header = F)
+  sample.ids <- read.table(sample.ids.file, stringsAsFactors = F, header = F)$V1
   sample.ids <- sample.ids[sample.ids %in% gds.samples]
   if (length(sample.ids) == 0) .exitError("samples", paste0(out.pref, ".ERROR.csv"))
   seqSetFilter(gds.data, sample.id=sample.ids)
@@ -240,6 +262,7 @@ if (!is.null(ref.var)){
   }
 }
 
+markers <- markers[!duplicated(markers$variant.id),]
 row.names(markers) <- markers$variant.id
 
 #########################
@@ -251,10 +274,10 @@ if (is.null(ref.var)){
   
   if (ld.method != 'dprime'){
     ld.df <- data.frame(ld$LD * ld$LD)
+    # ld.df <- data.frame(ld$LD)
   } else {
     ld.df <- data.frame(ld$LD)
   }
-  
   row.names(ld.df) <- colnames(ld.df) <- markers[as.character(ld$snp.id),]$MarkerName
 } else {
   ref.id <- row.names(markers[grep(ref.var, markers$MarkerName),])[1]
@@ -269,7 +292,8 @@ if (is.null(ref.var)){
 # make visulaization
 viz.file <- sub(".csv$", ".png", out.file)
 if (visual.bool) {
-  plotLD(ld.df, ld.method, viz.file)
+  single.var <- ifelse(is.null(ref.var), FALSE, TRUE)
+  plotLD(ld.df, ld.method, single.var, viz.file)
 } else {
   file.create(viz.file)
 }
