@@ -1,5 +1,4 @@
 task calculate_LD {
-	File script # /LDGds/calculate_LD.R
 	File gds_file
 	File? sample_ids_file
 	String? ref_var
@@ -19,7 +18,7 @@ task calculate_LD {
 	Int default_disk = ceil(size(gds_file, "GB")) + 20
 
 	command {
-		R --vanilla --args ${gds_file} ${default="NA" sample_ids_file} ${default="NA" ref_var} ${default="NA" rsid_file} ${default="NA" interval} ${default="25000" half_interval} ${default="0" min_mac} ${default="10000000" max_mac} ${default="0.05" min_maf} ${default="1" max_maf} ${default="r" ld_method} ${out_pref} ${default="F" visualization} < ${script}
+		R --vanilla --args ${gds_file} ${default="NA" sample_ids_file} ${default="NA" ref_var} ${default="NA" rsid_file} ${default="NA" interval} ${default="25000" half_interval} ${default="0" min_mac} ${default="10000000" max_mac} ${default="0.05" min_maf} ${default="1" max_maf} ${default="r" ld_method} ${out_pref} ${default="F" visualization} < /LDGds/calculate_LD.R
 	}
 
 	runtime {
@@ -88,6 +87,7 @@ workflow LD_wf {
 	    this_gds_file: "[file, *.gds] GDS file of genotypes per sample."
 		this_sample_ids_file: "[file, default = all samples] File of sample IDs desired for LD calculation. This file should contain one sample ID per line with no header."
 		this_ref_var: "[string, chr:pos] Genetic variant for which LD should be calculated. If provided, output is a row vector with pairwise LD with this variant in each row entry. Variant format should be 'chromosome:position'. Any punctuation seperator may be used. Only the first two values separated by punctuation will be considered."
+		this_rsid_file: "[file] A file with a list of rsids, one per line to calculate LD from."
 		this_interval: "[string, chr:start:end] Genomic interval for whcih LD should be calculated. If provided, LD will be calculated for only those variants falling within this interval. Interval format should be 'chromosome:start:end'. Any punctuation seperators may be used and need not match. Only the first three values separated by punctuation will be considered."
 		this_half_interval: "[int, default = 25kb] 1/2 of desired interval length if no interval is provided. When only a reference variant is provided, this value will be added and subtracted from the reference variant position to define the interval end and start, respectively. "
 		this_min_mac: "[int, default = 0] Minimum minor allele count for variant to be included in LD calculation."

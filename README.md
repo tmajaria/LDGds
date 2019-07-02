@@ -13,11 +13,12 @@ This workflow requires genotype files in GDS format (\*.gds) and a reference var
 An M x N diagonal matrix of pairwise LD values where N = number of variants within the genomic region. M = 1 if a reference variant is provided. M = N otherwise.
 
 ## Workflow Inputs
-**Bold** inputs are required. *Italic* inputs are optional. **NOTE**: one of [reference variant, interval] is required. Both may be provided resulting in LD values for the reference variant within the interval.
+**Bold** inputs are required. *Italic* inputs are optional. **NOTE**: one of [reference variant, interval, rsid file] is required. All may be provided resulting in LD values for the reference variant within the interval or for rsids.
 
 - **this_gds_file**: [file, \*.gds] GDS file of genotypes per sample.
 - *this_sample_ids_file*: [file, default = all samples] File of sample IDs desired for LD calculation. This file should contain one sample ID per line with no header.
 - *this_ref_var*: [string, chr:pos] Genetic variant for which LD should be calculated. If provided, output is a row vector with pairwise LD with this variant in each row entry. Variant format should be 'chromosome:position'. Any punctuation seperator may be used. Only the first two values separated by punctuation will be considered.
+- *this_rsid_file*: [file] A file with a list of rsids, one per line to calculate LD from.
 - *this_interval*: [string, chr:start:end] Genomic interval for whcih LD should be calculated. If provided, LD will be calculated for only those variants falling within this interval. Interval format should be 'chromosome:start:end'. Any punctuation seperators may be used and need not match. Only the first three values separated by punctuation will be considered.
 - *this_half_interval*: [int, default = 25kb] 1/2 of desired interval length if no interval is provided. When only a reference variant is provided, this value will be added and subtracted from the reference variant position to define the interval end and start, respectively. 
 - *this_min_mac*: [int, default = 0] Minimum minor allele count for variant to be included in LD calculation.
