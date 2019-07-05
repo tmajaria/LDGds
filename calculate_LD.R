@@ -403,6 +403,13 @@ if (is.null(ref.var)){
 
 # make visulaization
 viz.file <- sub(".csv$", ".png", out.file)
+
+# dont make if we have too many variants
+if (ncol(ld.df) > 100){
+  print("Too many variants for visulaization. Maximum is 100 variants.")
+  visual.bool <- F
+}
+
 if (visual.bool) {
   single.var <- ifelse(is.null(ref.var), FALSE, TRUE)
   plotLD(ld.df, ld.method, single.var, viz.file)
