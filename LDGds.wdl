@@ -77,10 +77,12 @@ workflow LD_wf {
 		String? fail_message = "Neither reference variant nor interval were specified, no computation was initiated."
 	}
 
+	String? workflow_message_var = select_first([pass_message, fail_message])
+
 	output {
         File? ld_file = calculate_LD.out_file
         File? ld_plot = calculate_LD.out_visualization
-        String? workflow_message = select_first([pass_message, fail_message])
+        String? workflow_message = workflow_message_var
     }
 
     parameter_meta {
