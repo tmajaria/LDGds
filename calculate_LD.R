@@ -283,8 +283,8 @@ out.file <- paste0(out.pref, ".csv")
 print(paste0("out.file = ", out.file))
 
 # check inputs
-if (all(is.null(c(ref.var, interval)))){
-  stop("Need to set either reference variant or interval")
+if (all(is.null(c(ref.var, interval, rsid.file)))){
+  stop("Need to set either reference variant, interval, or rsid file.")
 } 
 
 # make sure that we get the right ld method

@@ -13,9 +13,9 @@ task calculate_LD {
 	String out_pref
 	String? visualization
 	Int? memory
-	Int? disk
+	Int disk
 
-	Int default_disk = ceil(size(gds_file, "GB")) + 20
+	
 
 	command {
 		R --vanilla --args ${gds_file} ${default="NA" sample_ids_file} ${default="NA" ref_var} ${default="NA" rsid_file} ${default="NA" interval} ${default="25000" half_interval} ${default="0" min_mac} ${default="10000000" max_mac} ${default="0.05" min_maf} ${default="1" max_maf} ${default="r" ld_method} ${out_pref} ${default="F" visualization} < /LDGds/calculate_LD.R
@@ -23,7 +23,7 @@ task calculate_LD {
 
 	runtime {
 		docker: "tmajarian/ldgds:v0.1"
-		disks: "local-disk " + select_first([disk,default_disk]) + " HDD"
+		disks: "local-disk " + disk + " HDD"
 		memory: select_first([memory,"5"]) + " GB"
 	}
 
@@ -51,7 +51,9 @@ workflow LD_wf {
 	Int? this_memory
 	Int? this_disk
 
-	if (defined(this_ref_var) || defined(this_interval)) {
+	Int this_def_disk = select_first([this_disk, ceil(size(this_gds_file, "GB")) + 20])
+
+	if (defined(this_ref_var) || defined(this_interval) || defined(this_rsid_file)) {
 		call calculate_LD {
 			input: 
 				gds_file = this_gds_file,
@@ -68,13 +70,13 @@ workflow LD_wf {
 				out_pref = this_out_pref,
 				visualization = this_visualization,
 				memory = this_memory,
-				disk = this_disk
+				disk = this_def_disk
 		}
 		String? pass_message = "Workflow completed"
 	}
 
-	if (!defined(this_ref_var) && !defined(this_interval)) {
-		String? fail_message = "Neither reference variant nor interval were specified, no computation was initiated."
+	if (!defined(this_ref_var) && !defined(this_interval) && !defined(this_rsid_file)) {
+		String? fail_message = "Reference variant, interval, and rsid file were unspecified, no computation was initiated."
 	}
 
 	String? workflow_message_var = select_first([pass_message, fail_message])
