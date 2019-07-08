@@ -102,6 +102,23 @@ java -jar /my_path/cromwell-43.jar run LDGds.wdl -i test_inputs.json
 
 Once the workflow is running, lots of messages will output to your terminal screen. Eventually, the workflow will finish and a final output message will be printed, something like:
 
+```
+[2019-07-05 14:24:21,11] [info] SingleWorkflowRunnerActor workflow finished with status 'Succeeded'.
+{
+  "outputs": {
+  	"LD_wf.workflow_message": "Workflow completed",
+    "LD_wf.ld_file": "LDGds/cromwell-executions/LD_wf/0be34c4f-9543-431b-8b9a-71472eb09863/call-calculate_LD/execution/glob-beff34be37d6fa48589cc2bee8d5da74/LDGds_test.csv",
+    "LD_wf.ld_plot": "LDGds/cromwell-executions/LD_wf/0be34c4f-9543-431b-8b9a-71472eb09863/call-calculate_LD/execution/glob-209f5e029d2b8b379d112924438467fe/LDGds_test.png"
+  },
+  "id": "0be34c4f-9543-431b-8b9a-71472eb09863"
+}
+```
+
+Here, we can see three different outputs. The first is a message that tells us whether the workflow actually ran. There is only one case where the workflow will complete without running any computation: when no reference variant, interval, or rsid file is provided. In this case, the workflow message will be *Reference variant, interval, and rsid file were unspecified, no computation was initiated.* and all other outputs will be *NULL*.
+
+The second output is a file containing the LD values for each variant included in the analysis. This will always be a symmetric matrix. The last output is a visualization of the LD structure with variants in higher LD having more red values and those in lower LD closer to white. The output visualization for this tutorial should look like:
+
+![myimage](https://github.com/tmajaria/LDGds/blob/master/outputs/LDGds_test.png)
 
 
 
