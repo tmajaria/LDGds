@@ -6,13 +6,13 @@ Version: 0.1
 ## Description:
 Generate LD measures from genotypes in [Genomic Data Structure (GDS)](https://www.biostat.washington.edu/sites/default/files/modules/GDS_intro.pdf) format. This workflow will return LD information for a set of defined samples over a set of variants or a defined variant range. A flat file of LD values and a simple visualization are returned
 
-### What data are required for this workflow to run?
+#### What data are required for this workflow to run?
 This workflow requires genotype files in GDS format (\*.gds) and a reference variant or genomic region.
 
-### What does this workflow output?
+#### What does this workflow output?
 An M x N diagonal matrix of pairwise LD values where N = number of variants within the genomic region. M = 1 if a reference variant is provided. M = N otherwise.
 
-## Workflow Inputs
+### Workflow Inputs
 **Bold** inputs are required. *Italic* inputs are optional. **NOTE**: one of [reference variant, interval, rsid file] is required. All may be provided resulting in LD values for the reference variant within the interval or for rsids.
 
 - **this_gds_file**: [file, \*.gds] GDS file of genotypes per sample.
@@ -30,6 +30,81 @@ An M x N diagonal matrix of pairwise LD values where N = number of variants with
 - *this_memory*: [int, default = 5GB] Amount of memory to request for computation in GB.
 - *this_disk*: [int, default = size(this_gds_file) + 20 GB] Amount of disk space to request for computation in GB.
   
-## Workflow Output
+### Workflow Output
 
 - **ld_file**: [file, \*.csv] An M x N diagonal matrix of pairwise LD values where N = number of variants within the genomic region. M = 1 if a reference variant is provided. M = N otherwise.
+
+## Tutorial
+Also included in this repository are genotypes from the [1000 Genomes Project](). We can use this data to run the LD calculation workflow.
+
+### Prerequisites
+Workflows written in WDL require an execution engine to run. We recommend Cromwell but others may work as well. This workflow also utilized Docker, which must be installed prior to running. (*The R script, calculate_LD.R, can be run outside of the WDL workflow. It can be used like any other script, provided that the package dependencies are met.*)
+
+* [WDL](https://software.broadinstitute.org/wdl/documentation/quickstart)
+* [Cromwell](http://cromwell.readthedocs.io/en/develop/)
+* [Java8]()
+
+### Execution
+Once you have downloaded the Cromwell .jar file, open a terminal window and clone the github repository:
+
+```bash
+git clone https://github.com/tmajaria/LDGds.git
+```
+
+Navigate to the **LDGds** directory and take a look at the contents:
+
+```bash
+cd LDGds/
+ls
+```
+
+The output should be:
+```
+README.md
+LICENSE	
+Dockerfile
+calculate_LD.R
+LDGds.wdl
+test_inputs.json
+inputs
+```
+
+Within the *inputs* directory, you'll find two files: a .gds file with genotypes and a .txt file with sample ids. These files will be used as inputs to the workflow. 
+
+
+Workflow inputs are defined explicitely by a .json file. Within this file, each of the required inputs are defined by key-value pairs, matched to the variable within the WDL file. Optional inputs are also included. We can take a look at the test_inputs.json file that will be used in this tutorial.
+
+```bash
+cat test_inputs.json
+```
+
+The output should be:
+```
+{
+	"LD_wf.this_interval": "20.33500000.33600000",
+	"LD_wf.this_max_maf": 1,
+	"LD_wf.this_min_maf": 0.2,
+	"LD_wf.this_sample_ids_file": "inputs/YRI_sample_ids.txt",
+	"LD_wf.this_ld_method": "r",
+	"LD_wf.this_visualization": "T",
+	"LD_wf.this_out_pref": "LDGds_test",
+	"LD_wf.this_gds_file": "inputs/1KG_phase3_chr20_subset.gds"
+}
+```
+
+These inputs show that we will be calculating LD within a 100kb region of chromosome 20, including variants that have a minor allele frequency greater than 20% in a specific set of individuals, those from the YRI subpopulation as defined by 1000 Genomes. The R² LD measure will be used and a visualization will be generated. Both output files will have the prefix *LDGds_test*.
+
+At this point, we're ready to run the workflow. You will need the filepath for the Cromwell .jar file. For this tutorial, let's assume the path is: */my_path/cromwell-43.jar*. We can run the workflow using the syntax:
+
+```bash
+java -jar /my_path/cromwell-43.jar run LDGds.wdl -i test_inputs.json
+```
+
+Once the workflow is running, lots of messages will output to your terminal screen. Eventually, the workflow will finish and a final output message will be printed, something like:
+
+
+
+
+
+
+
