@@ -10,10 +10,10 @@ Generate LD measures from genotypes in [Genomic Data Structure (GDS)](https://ww
 This workflow requires genotype files in GDS format (\*.gds) and a reference variant or genomic region.
 
 #### What does this workflow output?
-An M x N diagonal matrix of pairwise LD values where N = number of variants within the genomic region. M = 1 if a reference variant is provided. M = N otherwise.
+An M x N matrix of pairwise LD values where N = number of variants within the genomic region. M = 1 if a reference variant is provided. M = N otherwise.
 
 ### Workflow Inputs
-**Bold** inputs are required. *Italic* inputs are optional. **NOTE**: one of [reference variant, interval, rsid file] is required. All may be provided resulting in LD values for the reference variant within the interval or for rsids.
+**Bold** inputs are required; *Italic* inputs are optional. **NOTE**: one of [reference variant, interval, rsid file] is required. All may be provided resulting in LD values for the reference variant within the interval or for rsids.
 
 - **this_gds_file**: [file, \*.gds] GDS file of genotypes per sample.
 - *this_sample_ids_file*: [file, default = all samples] File of sample IDs desired for LD calculation. This file should contain one sample ID per line with no header.
@@ -38,11 +38,12 @@ An M x N diagonal matrix of pairwise LD values where N = number of variants with
 Also included in this repository are genotypes from the [1000 Genomes Project](). We can use this data to run the LD calculation workflow.
 
 ### Prerequisites
-Workflows written in WDL require an execution engine to run. We recommend Cromwell but others may work as well. This workflow also utilized Docker, which must be installed prior to running. (*The R script, calculate_LD.R, can be run outside of the WDL workflow. It can be used like any other script, provided that the package dependencies are met.*)
+Workflows written in WDL require an execution engine to run. We recommend Cromwell but others may work as well. This workflow also utilizes Docker, which must be installed prior to running. Java version 8 or greater must also be installed for Cromwell to run. Below are links to each software required. (Note: *calculate_LD.R can be run outside of the WDL workflow. It can be used like any other script, provided that the package dependencies are met.*) 
 
 * [WDL](https://software.broadinstitute.org/wdl/documentation/quickstart)
 * [Cromwell](http://cromwell.readthedocs.io/en/develop/)
-* [Java8]()
+* [Java8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+* [Docker](https://www.docker.com/)
 
 ### Execution
 Once you have downloaded the Cromwell .jar file, open a terminal window and clone the github repository:
@@ -67,6 +68,7 @@ calculate_LD.R
 LDGds.wdl
 test_inputs.json
 inputs
+ouputs
 ```
 
 Within the *inputs* directory, you'll find two files: a .gds file with genotypes and a .txt file with sample ids. These files will be used as inputs to the workflow. 
