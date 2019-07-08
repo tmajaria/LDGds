@@ -106,7 +106,7 @@ Once the workflow is running, lots of messages will output to your terminal scre
 [2019-07-05 14:24:21,11] [info] SingleWorkflowRunnerActor workflow finished with status 'Succeeded'.
 {
   "outputs": {
-"LD_wf.workflow_message": "Workflow completed",
+	"LD_wf.workflow_message": "Workflow completed",
     "LD_wf.ld_file": "LDGds/cromwell-executions/LD_wf/0be34c4f-9543-431b-8b9a-71472eb09863/call-calculate_LD/execution/glob-beff34be37d6fa48589cc2bee8d5da74/LDGds_test.csv",
     "LD_wf.ld_plot": "LDGds/cromwell-executions/LD_wf/0be34c4f-9543-431b-8b9a-71472eb09863/call-calculate_LD/execution/glob-209f5e029d2b8b379d112924438467fe/LDGds_test.png"
   },
